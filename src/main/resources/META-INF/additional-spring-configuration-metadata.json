@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "name": "method-log.on-off",
+      "type": "java.lang.String",
+      "description": "是否开启日志功能，on开启，off关闭.",
+      "defaultValue": "on"
+    }
+  ]
+}
