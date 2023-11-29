@@ -1,7 +1,7 @@
 log-spring-boot-starter
 ======================
 ## 一、简介
-log-spring-boot-starter是基于SpringBoot的AOP日志框架，可以将参数化日志。
+log-spring-boot-starter是基于SpringBoot的AOP日志框架，可以将日志参数化。
 
 ### 1、主要优势
 * **[1]可以添加多种自定义的日志拦截器**
@@ -19,7 +19,21 @@ log-spring-boot-starter是基于SpringBoot的AOP日志框架，可以将参数�
     <version>0.0.6</version>
 </dependency>
 ```
-### 2、切面注册
+### 2、日志切面实现
+日志拦截器需实现LogInterceptor接口，参数message和properties由注解@MethodLog定义
+```java
+public class TestLogInterceptor implements LogInterceptor{
+    @Override
+    public void doBeforeLog(String message, Map<String, String> properties) {
+        System.out.println("================doBeforeLog==============");
+        System.out.println("message==>" + message);
+        System.out.println("properties==>");
+        System.out.println("\t" + properties);
+    }
+}
+```
+
+### 3、切面注册
 继承MethodLogConfigurerAdapter，进行上下文及自定义的日志拦截器注册
 
 ```java
@@ -41,19 +55,6 @@ public class MethodConfiguration implements MethodLogConfigurerAdapter {
 }
 ```
 
-### 3、日志拦截器实现
-日志拦截器需实现LogInterceptor接口，参数message和properties由注解@MethodLog定义
-```java
-public class TestLogInterceptor implements LogInterceptor{
-    @Override
-    public void doBeforeLog(String message, Map<String, String> properties) {
-        System.out.println("================doBeforeLog==============");
-        System.out.println("message==>" + message);
-        System.out.println("properties==>");
-        System.out.println("\t" + properties);
-    }
-}
-```
 ### 4、注解使用
 ```java
 public interface TestController {
