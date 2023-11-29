@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 /**
@@ -26,6 +27,7 @@ import java.util.function.Supplier;
  */
 public class LogAspect implements LogInterceptorRegistry,LogContextVariablesRegistry, MethodInterceptor {
     private final static TemplateParserContext templateParserContext = new TemplateParserContext();
+    private final Map<Method, MethodLog> methodAnnotationCache = new ConcurrentHashMap<>();
     private List<LogInterceptor> interceptorList = Collections.emptyList();
     private Supplier<Map<String, Object>> contextVariable = Collections::emptyMap;
     private static final String RESULT_PARAM = "result";
@@ -47,7 +49,7 @@ public class LogAspect implements LogInterceptorRegistry,LogContextVariablesRegi
         evaluationContext.setVariables(contextVariable.get());
         SpelExpressionParser spelExpressionParser = new SpelExpressionParser();
 
-        MethodLog methodLog = getMethodLogAnnotation(method);
+        MethodLog methodLog = methodAnnotationCache.computeIfAbsent(method, this::getMethodLogAnnotation);
         Boolean shouldDoLog = shouldDoLog(methodLog.condition(), spelExpressionParser, evaluationContext);
         if (!shouldDoLog){
             return invocation.proceed();
